@@ -4,21 +4,29 @@ import datetime
 
 from app.extensions import db
 from app.models.feedeater_models import Feed
-from app.models.user_models import User, Role
+from app.models.user import User, Role
 
+from flask import Blueprint
+from flask import current_app as app
 import click
+from werkzeug.security import generate_password_hash, check_password_hash
 
-@click.command()
-def init_db():
+# Blueprint Configuration
+commands_bp = Blueprint(
+    'init', __name__
+)
+
+@commands_bp.cli.command()
+@click.option('-d', '--delete', is_flag=True, default=False, is_eager=True)
+def init_db(delete):
     """ Initialize the database."""
+    if delete:
+        print("Deleting database content")
+        db.drop_all()
     db.create_all()
-    # Load some data into memory from the database
-    # If we do this here then we need to have the Celery tasks reset the SQLAlchemy session and
-    # engine before they run since the databases connection cannot be reused acrossed processes
-    # FMI: see the notes in celeryapp/__init__.py
-    feeds = populate_cache(server)
 
-@click.command()
+
+@commands_bp.cli.command()
 def create_feeds():
     feed = Feed(
         title='Real Python', status=1, url='https://realpython.com/atom.xml', type='rss',
@@ -56,7 +64,7 @@ def create_feeds():
 
     db.session.commit()
 
-@click.command()
+@commands_bp.cli.command()
 def create_users():
     """ Create users """
     # Create all tables
@@ -89,13 +97,12 @@ def find_or_create_user(first_name, last_name, email, password, role=None):
         user = User(email=email,
                     first_name=first_name,
                     last_name=last_name,
-                    password=app.user_manager.password_manager.hash_password(password),
+                    password=generate_password_hash(password),
                     active=True,
                     email_confirmed_at=datetime.datetime.utcnow())
         if role:
             user.roles.append(role)
         db.session.add(user)
     return user
-
 
 

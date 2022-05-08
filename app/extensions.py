@@ -11,6 +11,7 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap5
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
+from flask_security import Security
 
 
 class FlaskCelery(Celery):
@@ -63,3 +64,4 @@ login = LoginManager()
 bootstrap = Bootstrap5()
 csrf_protect = CSRFProtect()
 mail = Mail()
+security = Security()
