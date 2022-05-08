@@ -5,7 +5,7 @@ from typing import List
 import feedparser
 from attr import attrib, attrs
 
-from app import db
+from app.extensions import db
 from app.models import feedeater_models as models
 
 

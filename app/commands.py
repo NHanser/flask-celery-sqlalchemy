@@ -2,30 +2,23 @@
 
 import datetime
 
-from flask import current_app
-from flask_script import Command
-
-from app import db
+from app.extensions import db
 from app.models.feedeater_models import Feed
 from app.models.user_models import User, Role
 
+import click
 
-class InitDbCommand(Command):
-    """ Initialize the database."""
-
-    def run(self):
-        init_db()
-        print('Database has been initialized.')
-
-
+@click.command()
 def init_db():
     """ Initialize the database."""
-    db.drop_all()
     db.create_all()
-    create_users()
-    create_feeds()
+    # Load some data into memory from the database
+    # If we do this here then we need to have the Celery tasks reset the SQLAlchemy session and
+    # engine before they run since the databases connection cannot be reused acrossed processes
+    # FMI: see the notes in celeryapp/__init__.py
+    feeds = populate_cache(server)
 
-
+@click.command()
 def create_feeds():
     feed = Feed(
         title='Real Python', status=1, url='https://realpython.com/atom.xml', type='rss',
@@ -63,10 +56,9 @@ def create_feeds():
 
     db.session.commit()
 
-
+@click.command()
 def create_users():
     """ Create users """
-
     # Create all tables
     db.create_all()
 
@@ -97,7 +89,7 @@ def find_or_create_user(first_name, last_name, email, password, role=None):
         user = User(email=email,
                     first_name=first_name,
                     last_name=last_name,
-                    password=current_app.user_manager.password_manager.hash_password(password),
+                    password=app.user_manager.password_manager.hash_password(password),
                     active=True,
                     email_confirmed_at=datetime.datetime.utcnow())
         if role:

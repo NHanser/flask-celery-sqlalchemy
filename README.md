@@ -23,19 +23,25 @@ Based on the [the Flask-User-Starter-App](https://github.com/lingthio/Flask-User
 
 ## Setting up a development environment
 
-We assume that you have `git` and `virtualenv` and `virtualenvwrapper` installed.
+We assume that you have `git` and `virtualenv` and `virtualenvwrapper` installed. For Windows, install pipenv.
 
     # Clone the code repository into ~/dev/my_app
     mkdir -p ~/dev
     cd ~/dev
     git clone https://github.com/lingthio/Flask-User-starter-app.git my_app
 
-    # Create the 'my_app' virtual environment
-    mkvirtualenv -p PATH/TO/PYTHON my_app
+    # Create the 'my_app' virtual environment using virtualenv
+    cd ~/dev/my_app
+    py -3 -m venv venv # Windows command
+    OR  
+    mkvirtualenv -p PATH/TO/PYTHON my_app # Linux/MacOs command
 
     # Install required Python packages
-    cd ~/dev/my_app
-    workon my_app
+    .\venv\Scripts\Activate.ps1 # Windows powershell
+    OR
+    workon my_app # Linux or MacOS
+
+    #Then
     pipenv install
 
 
@@ -59,6 +65,7 @@ See https://help.yahoo.com/kb/SLN27791.html
 ## Initializing the Database
 
     # Create DB tables and populate the roles and users tables
+    flask db init
     python manage.py init_db
 
     # Or if you have Fabric installed:

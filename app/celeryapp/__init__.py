@@ -6,6 +6,7 @@ from celery import Celery
 from celery.signals import after_setup_logger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from app.extensions import db
 
 CELERY_TASK_LIST = [
     'app.tasks',
@@ -27,8 +28,6 @@ def create_celery_app(_app=None):
     # New Relic integration
     # if os.environ.get('NEW_RELIC_CELERY_ENABLED') == 'True':
     #     _app.initialize('celery')
-
-    from app import db
 
     celery = Celery(_app.import_name,
                     broker=_app.config['CELERY_BROKER_URL'],
