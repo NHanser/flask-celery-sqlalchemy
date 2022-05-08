@@ -4,7 +4,8 @@ from flask import Blueprint, redirect, render_template, flash, jsonify
 from flask import request, url_for
 from flask_user import current_user, login_required, roles_required
 
-from app import db, tasks
+from app import tasks
+from app.extensions import db
 from app.models.feedeater_models import Feed
 from app.models.user_models import UserProfileForm
 
