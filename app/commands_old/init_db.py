@@ -7,7 +7,7 @@ from flask_script import Command
 
 from app.extensions import db
 from app.models.feedeater_models import Feed
-from app.models.user_models import User, Role
+from app.models.user import User, Role
 
 
 class InitDbCommand(Command):

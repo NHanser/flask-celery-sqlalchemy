@@ -15,5 +15,4 @@ cli = FlaskGroup(create_app=app)
 if __name__ == "__main__":
     # python manage.py                      # shows available commands
     # python manage.py runserver --help     # shows available runserver options
-    print("Go run app")
-    app.run(debug=True)
+    app.run()

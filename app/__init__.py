@@ -14,6 +14,9 @@ from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 from flask_login import login_required
 from flask.helpers import get_root_path
+from flask_security import Security
+from flask_security.datastore import SQLAlchemySessionUserDatastore
+from app.models.user import User, Role
 
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
 
@@ -23,14 +26,6 @@ logging.basicConfig(filename=LOGGING_FILE,
                     level=logging.DEBUG,
                     datefmt=DATA_FMT)
 
-# Initialize Flask Application
-def populate_cache(app):
-    from .models.feedeater_models import Feed
-
-    with app.app_context():
-        feeds = Feed.query.all()
-
-    return feeds
 
 def create_app():
     """Creates Flask instance"""
@@ -47,7 +42,6 @@ def create_app():
     register_extensions(server)
     register_blueprints(server)
     register_dashapps(server)
-    register_commands(server)
 
     return server
 
@@ -59,33 +53,32 @@ def register_extensions(server):
     from app.extensions import bootstrap
     from app.extensions import mail
     from app.extensions import csrf_protect
+    from app.extensions import security
 
     bootstrap.init_app(server)
     CORS(server)
     with server.app_context():
         db.init_app(server)
         login.init_app(server)
-        login.login_view = 'auth_bp.login'
+        #login.login_view = 'auth_bp.login'
         mail.init_app(server)
         csrf_protect.init_app(server)
         migrate.init_app(server, db)
         celery.init_app(server)
-
-def register_commands(server):
-    from app import commands
-    server.cli.add_command(commands.init_db)
-    server.cli.add_command(commands.create_users)
-    server.cli.add_command(commands.create_feeds)
+        user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
+        security.init_app(server,user_datastore)
 
 
 def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
     from .views import main_blueprint
     from .auth import routes as auth_routes
+    from app.commands import commands_bp
 
     # Register Blueprints
     server.register_blueprint(main_blueprint)
-    server.register_blueprint(auth_routes.auth_bp)
+    #server.register_blueprint(auth_routes.auth_bp)
+    server.register_blueprint(commands_bp)
 
 
 def register_wtforms(server):
@@ -102,7 +95,7 @@ def register_UserManagement(server):
     #TODO to be replaced by something else. Check Flask-Security-too package
     from flask_user import UserManager
     # Setup Flask-User to handle user account related forms
-    from .models.user_models import User
+    from .models.user import User
     from .views.main_views import user_profile_page
 
     # Setup Flask-User
@@ -159,7 +152,7 @@ def create_app(extra_config_settings={}):
     # Load extra settings from extra_config_settings param
     server.config.update(extra_config_settings)
 
-    from app.models.user import User
+    #from app.models.user import User
 
     register_extensions(server)
     register_blueprints(server)
@@ -168,9 +161,13 @@ def create_app(extra_config_settings={}):
    
     # Setup an error-logger to send emails to app.config.ADMINS
     init_email_error_handler(server)
-    print("create app done")
 
     return server
+
+def register_security(server):
+    # Setup Flask-Security
+    user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
+    security = Security(server, user_datastore)
 
 
 def init_email_error_handler(app):
