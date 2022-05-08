@@ -15,10 +15,10 @@
             },
             "args": [
                 "run",
-                "--no-debugger"
+                "--no-debugger",
+                "--no-reload"
             ],
-            "jinja": true,
-            "justMyCode": true
+            "jinja": true
         }
     ]
 }
