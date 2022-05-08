@@ -81,9 +81,11 @@ def register_commands(server):
 def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
     from .views import main_blueprint
+    from .auth import routes as auth_routes
 
     # Register Blueprints
     server.register_blueprint(main_blueprint)
+    server.register_blueprint(auth_routes.auth_bp)
 
 
 def register_wtforms(server):
@@ -158,7 +160,7 @@ def create_app(extra_config_settings={}):
     server.config.update(extra_config_settings)
 
     from app.models.user import User
-    
+
     register_extensions(server)
     register_blueprints(server)
     register_dashapps(server)
