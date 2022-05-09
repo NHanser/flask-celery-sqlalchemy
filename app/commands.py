@@ -2,7 +2,7 @@
 
 import datetime
 
-from app.extensions import db
+from app.extensions import db, security
 from app.models.feedeater_models import Feed
 from app.models.user import User, Role
 
@@ -10,6 +10,7 @@ from flask import Blueprint
 from flask import current_app as app
 import click
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 # Blueprint Configuration
 commands_bp = Blueprint(
@@ -71,38 +72,39 @@ def create_users():
     db.create_all()
 
     # Adding roles
-    admin_role = find_or_create_role('admin', u'Admin')
+    admin_role = find_or_create_role('admin', 'Admin')
 
     # Add users
-    user = find_or_create_user(u'Admin', u'Example', u'admin@example.com', 'Password1', admin_role)
-    user = find_or_create_user(u'Member', u'Example', u'member@example.com', 'Password1')
+    user = find_or_create_user('admin@example.com', 'admin', 'Admin', 'Example', 'Password1', admin_role)
+    user = find_or_create_user('member@example.com', 'member', 'Member', 'Example', 'Password1')
 
     # Save to DB
     db.session.commit()
 
 
-def find_or_create_role(name, label):
+def find_or_create_role(name, description):
     """ Find existing role or create new role """
     role = Role.query.filter(Role.name == name).first()
     if not role:
-        role = Role(name=name, label=label)
+        role = Role(name=name, description=description)
         db.session.add(role)
     return role
 
 
-def find_or_create_user(first_name, last_name, email, password, role=None):
+def find_or_create_user(email, username, first_name, last_name, password, role=None):
     """ Find existing user or create new user """
-    user = User.query.filter(User.email == email).first()
+    user = User.query.filter(User.username == username).first()
     if not user:
-        user = User(email=email,
+        new_user = security.datastore.create_user(email=email,
+                    username=username,
                     first_name=first_name,
                     last_name=last_name,
                     password=generate_password_hash(password),
                     active=True,
-                    email_confirmed_at=datetime.datetime.utcnow())
+                    confirmed_at=datetime.datetime.utcnow())
+        
         if role:
-            user.roles.append(role)
-        db.session.add(user)
+            new_user.roles.append(role)
     return user
 
 

@@ -1,17 +1,10 @@
-{% extends "main/main_base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
     <h1>Register</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-        </p>
+        {{ render_form(form) }}
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}
