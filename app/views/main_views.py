@@ -2,15 +2,16 @@ import datetime
 
 from flask import Blueprint, redirect, render_template, flash, jsonify
 from flask import request, url_for
-from flask_login import login_required, current_user#, roles_required
-from flask_security import roles_required
+from flask_login import current_user#, roles_required
+from flask_security import roles_required, auth_required 
 
 from app import tasks
 from app.extensions import db
 from app.models.feedeater_models import Feed
 from app.models.user import UserProfileForm
 
-main_blueprint = Blueprint('main', __name__, template_folder='templates')
+main_blueprint = Blueprint('main', __name__, template_folder='templates',
+    static_folder='static')
 
 
 # The Home page is accessible to anyone
@@ -21,20 +22,20 @@ def home_page():
 
 # The User page is accessible to authenticated users (users that have logged in)
 @main_blueprint.route('/member')
-@login_required  # Limits access to authenticated users
+#@login_required  # Limits access to authenticated users
 def member_page():
     return render_template('main/user_page.html')
 
 
 # The Admin page is accessible to users with the 'admin' role
 @main_blueprint.route('/admin')
-@roles_required('admin')  # Limits access to users with the 'admin' role
+#@roles_required('admin')  # Limits access to users with the 'admin' role
 def admin_page():
     return render_template('main/admin_page.html')
 
 
 @main_blueprint.route('/main/profile', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def user_profile_page():
     # Initialize form
     form = UserProfileForm(request.form, obj=current_user)

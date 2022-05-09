@@ -14,7 +14,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 from flask_login import login_required
 from flask.helpers import get_root_path
-from flask_security import Security
+from flask_security import Security, auth_required
 from flask_security.datastore import SQLAlchemySessionUserDatastore
 from app.models.user import User, Role
 
@@ -25,6 +25,14 @@ logging.basicConfig(filename=LOGGING_FILE,
                     format=LOGGING_FORMAT,
                     level=logging.DEBUG,
                     datefmt=DATA_FMT)
+
+from flask_security import RegisterForm, LoginForm
+from wtforms import StringField
+from wtforms.validators import DataRequired
+
+class ExtendedRegisterForm(RegisterForm):
+    first_name = StringField('First Name', [DataRequired()])
+    last_name = StringField('Last Name', [DataRequired()])
 
 
 def create_app():
@@ -55,28 +63,33 @@ def register_extensions(server):
     from app.extensions import csrf_protect
     from app.extensions import security
 
-    bootstrap.init_app(server)
-    CORS(server)
+
     with server.app_context():
+        bootstrap.init_app(server)
+        CORS(server)
         db.init_app(server)
         login.init_app(server)
-        #login.login_view = 'auth_bp.login'
         mail.init_app(server)
         csrf_protect.init_app(server)
         migrate.init_app(server, db)
         celery.init_app(server)
+        CSRFProtect(server)
         user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
         security.init_app(server,user_datastore)
+        @server.route("/")
+        @auth_required()
+        def home():
+            return render_template_string('Hello {{email}} !', email=current_user.email)
 
 
 def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
-    from .views import main_blueprint
-    from .auth import routes as auth_routes
+    #from .views.main_views import main_blueprint
+    #from .auth import routes as auth_routes
     from app.commands import commands_bp
 
     # Register Blueprints
-    server.register_blueprint(main_blueprint)
+    #server.register_blueprint(main_blueprint)
     #server.register_blueprint(auth_routes.auth_bp)
     server.register_blueprint(commands_bp)
 
@@ -167,7 +180,7 @@ def create_app(extra_config_settings={}):
 def register_security(server):
     # Setup Flask-Security
     user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
-    security = Security(server, user_datastore)
+    security = Security(server, user_datastore, register_form=ExtendedRegisterForm)
 
 
 def init_email_error_handler(app):

@@ -12,7 +12,7 @@ def test_page_urls(client):
     assert response.status_code==200
 
     # Login as user and visit User page
-    response = client.post(url_for('auth_bp.login'), follow_redirects=True,
+    response = client.post(url_for('auth_bp.loginmyapp'), follow_redirects=True,
                            data=dict(email='user@example.com', password='Password1'))
     assert response.status_code==200
     response = client.get(url_for('main.member_page'), follow_redirects=True)
@@ -31,7 +31,7 @@ def test_page_urls(client):
     assert response.status_code==200
 
     # Login as admin and visit Admin page
-    response = client.post(url_for('auth_bp.login'), follow_redirects=True,
+    response = client.post(url_for('auth_bp.loginmyapp'), follow_redirects=True,
                            data=dict(email='admin@example.com', password='Password1'))
     assert response.status_code==200
     response = client.get(url_for('main.admin_page'), follow_redirects=True)
