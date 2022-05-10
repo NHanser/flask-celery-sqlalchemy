@@ -12,16 +12,19 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
-from flask_login import login_required
+from flask_login import login_required, current_user
 from flask.helpers import get_root_path
 from flask_security import Security, auth_required
 from flask_security.datastore import SQLAlchemySessionUserDatastore
+from flask_admin.contrib.sqla import ModelView
+from flask_admin import AdminIndexView
 from app.models.user import User, Role
+
 
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
 
-logging.basicConfig(filename=LOGGING_FILE,
-                    filemode='a',
+logging.basicConfig(#filename=LOGGING_FILE,
+                    #filemode='a',
                     format=LOGGING_FORMAT,
                     level=logging.DEBUG,
                     datefmt=DATA_FMT)
@@ -34,6 +37,21 @@ class ExtendedRegisterForm(RegisterForm):
     first_name = StringField('First Name', [DataRequired()])
     last_name = StringField('Last Name', [DataRequired()])
 
+class ControllerModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        # redirect to login page if user doesn't have access
+        return redirect(url_for('security.login', next=request.url))
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.has_role('admin')# This does the trick rendering the view only if the user is authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        # redirect to login page if user doesn't have access
+        return redirect(url_for('security.login', next=request.url))
 
 def create_app():
     """Creates Flask instance"""
@@ -62,6 +80,7 @@ def register_extensions(server):
     from app.extensions import mail
     from app.extensions import csrf_protect
     from app.extensions import security
+    from app.extensions import admin
 
 
     with server.app_context():
@@ -76,6 +95,9 @@ def register_extensions(server):
         CSRFProtect(server)
         user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
         security.init_app(server,user_datastore)
+        admin.init_app(server, index_view = MyAdminIndexView())
+        admin.add_view(ControllerModelView(User, db.session))
+        admin.add_view(ControllerModelView(Role, db.session))
 
 
 def register_blueprints(server):
@@ -106,19 +128,19 @@ def register_dashapps(app):
         "name": "viewport",
         "content": "width=device-width, initial-scale=1, shrink-to-fit=no"}
 
-    dash_example = dash.Dash(__name__,
+    dashapp = dash.Dash(__name__,
                              server=app,
                              url_base_pathname='/dashapp/',
                              assets_folder=get_root_path(__name__) + '/dashboard/assets/')
 
     with app.app_context():
-        from app.dash_example.layout import layout
-        from app.dash_example.callbacks import register_callbacks
-        dash_example.title = 'Dash quotes'
-        dash_example.layout = layout
-        register_callbacks(dash_example)
+        from app.dashapp.layout import layout
+        from app.dashapp.callbacks import register_callbacks
+        dashapp.title = 'Dash quotes'
+        dashapp.layout = layout
+        register_callbacks(dashapp)
 
-    _protect_dashviews(dash_example)
+    _protect_dashviews(dashapp)
 
 
 def _protect_dashviews(dashapp):

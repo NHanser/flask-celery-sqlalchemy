@@ -12,6 +12,7 @@ from flask_bootstrap import Bootstrap5
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
 from flask_security import Security
+from flask_admin import Admin
 
 
 class FlaskCelery(Celery):
@@ -65,3 +66,4 @@ bootstrap = Bootstrap5()
 csrf_protect = CSRFProtect()
 mail = Mail()
 security = Security()
+admin = Admin()
