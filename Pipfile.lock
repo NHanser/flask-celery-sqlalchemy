@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "fa25fa2a0b774c01e5b9f0b36daf8cf6bd572a0469d4e50a7fe6422d0223410f"
+            "sha256": "0820ad22cfd26b24cf5dc5e3daae2cf821d6f74947aa90a897a2a254195690de"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -47,6 +47,14 @@
             ],
             "index": "pypi",
             "version": "==21.4.0"
+        },
+        "beautifulsoup4": {
+            "hashes": [
+                "sha256:58d5c3d29f5a36ffeb94f02f0d786cd53014cf9b3b3951d42e0080d8a9498d30",
+                "sha256:ad9aa55b65ef2808eb405f46cf74df7fcb7044d5cbc26487f96eb2ef2e436693"
+            ],
+            "index": "pypi",
+            "version": "==4.11.1"
         },
         "billiard": {
             "hashes": [
@@ -331,6 +339,13 @@
             ],
             "index": "pypi",
             "version": "==2.1.2"
+        },
+        "flask-admin": {
+            "hashes": [
+                "sha256:424ffc79b7b0dfff051555686ea12e86e48dffacac14beaa319fb4502ac40988"
+            ],
+            "index": "pypi",
+            "version": "==1.6.0"
         },
         "flask-compress": {
             "hashes": [
@@ -651,6 +666,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
+        },
+        "soupsieve": {
+            "hashes": [
+                "sha256:3b2503d3c7084a42b1ebd08116e5f81aadfaea95863628c80a3b774a11b7c759",
+                "sha256:fc53893b3da2c33de295667a0e19f078c14bf86544af307354de5fcf12a3f30d"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2.3.2.post1"
         },
         "sqlalchemy": {
             "hashes": [

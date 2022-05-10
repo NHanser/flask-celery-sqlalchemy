@@ -11,7 +11,7 @@
   {%- endblock metas %}
 
   {%- block styles %}
-  <link rel="icon" type="image/png" href="/static/assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
   <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
@@ -56,7 +56,7 @@
                     </li>
                     {% if current_user.has_role('admin') %}
                     <li>
-                        <a href="#" class="nav-link px-sm-0 px-2">
+                        <a href="{{ url_for('admin.index') }}" class="nav-link px-sm-0 px-2">
                             <i class="fs-5 bi-people"></i><span class="ms-1 d-none d-sm-inline">Admin</span> </a>
                     </li>
                     {% endif %}
