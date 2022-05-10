@@ -5,7 +5,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, validators
 from app.extensions import db
-from flask_login import UserMixin
+from flask_security import UserMixin, RoleMixin
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
@@ -40,11 +40,14 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
     last_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
 
+    def has_role(self, role):
+        return role in self.roles
+
 
 
 
 # Define the Role data model
-class Role(db.Model):
+class Role(db.Model, RoleMixin):
     __tablename__ = 'role' 
     id = db.Column(db.Integer(), primary_key=True) 
     name = db.Column(db.String(80), unique=True) 

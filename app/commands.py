@@ -99,7 +99,7 @@ def find_or_create_user(email, username, first_name, last_name, password, role=N
                     username=username,
                     first_name=first_name,
                     last_name=last_name,
-                    password=generate_password_hash(password),
+                    password=password,
                     active=True,
                     confirmed_at=datetime.datetime.utcnow())
         
