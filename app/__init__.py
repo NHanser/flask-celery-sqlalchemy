@@ -76,21 +76,16 @@ def register_extensions(server):
         CSRFProtect(server)
         user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
         security.init_app(server,user_datastore)
-        @server.route("/")
-        @auth_required()
-        def home():
-            return render_template_string('Hello {{email}} !', email=current_user.email)
 
 
 def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
-    #from .views.main_views import main_blueprint
+    from .views.main_views import main_blueprint
     #from .auth import routes as auth_routes
     from app.commands import commands_bp
 
     # Register Blueprints
-    #server.register_blueprint(main_blueprint)
-    #server.register_blueprint(auth_routes.auth_bp)
+    server.register_blueprint(main_blueprint)
     server.register_blueprint(commands_bp)
 
 
@@ -104,20 +99,6 @@ def register_wtforms(server):
     server.jinja_env.globals['bootstrap_is_hidden_field'] = is_hidden_field_filter
 
 
-def register_UserManagement(server):
-    #TODO to be replaced by something else. Check Flask-Security-too package
-    from flask_user import UserManager
-    # Setup Flask-User to handle user account related forms
-    from .models.user import User
-    from .views.main_views import user_profile_page
-
-    # Setup Flask-User
-    user_manager = UserManager(server, db, User)
-    
-    @server.context_processor
-    def context_processor():
-        return dict(user_manager=user_manager)
-
 
 def register_dashapps(app):
     # Meta tags for viewport responsiveness
@@ -127,9 +108,8 @@ def register_dashapps(app):
 
     dash_example = dash.Dash(__name__,
                              server=app,
-                             url_base_pathname='/dashboard/',
-                             assets_folder=get_root_path(__name__) + '/dashboard/assets/',
-                             meta_tags=[meta_viewport])
+                             url_base_pathname='/dashapp/',
+                             assets_folder=get_root_path(__name__) + '/dashboard/assets/')
 
     with app.app_context():
         from app.dash_example.layout import layout

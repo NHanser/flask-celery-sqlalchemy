@@ -10,6 +10,8 @@ from app.extensions import db
 from app.models.feedeater_models import Feed
 from app.models.user import UserProfileForm
 
+from bs4 import BeautifulSoup
+
 main_blueprint = Blueprint('main', __name__, template_folder='templates',
     static_folder='static')
 
@@ -17,7 +19,13 @@ main_blueprint = Blueprint('main', __name__, template_folder='templates',
 # The Home page is accessible to anyone
 @main_blueprint.route('/')
 def home_page():
-    return render_template('main/home_page.html')
+    return render_template('layouts/base.html')
+
+@main_blueprint.route('/dashboard')
+def dash_page():
+    soup = BeautifulSoup('/dashapp', 'html.parser')
+    footer = soup.footer
+    return render_template('dashboard.html', title='Embedded Dash app', footer=footer)
 
 
 # The User page is accessible to authenticated users (users that have logged in)

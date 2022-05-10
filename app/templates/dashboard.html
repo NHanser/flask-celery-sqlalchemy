@@ -1,0 +1,11 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<iframe 
+    noresize='noresize' 
+    style="width: 100vw;height: 100vh;position: relative;"
+    src="/dashapp"
+    frameborder="0">
+</iframe>
+{{ footer|safe }}
+{% endblock %}
