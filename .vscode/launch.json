@@ -18,12 +18,21 @@
             "jinja": true
         },
         {
-            "name": "Python : Celery Workers",
+            "name": "Python : Celery Workers (Windows)",
             "type": "python",
             "request": "launch",
             "module": "celery",
             "envFile": "${workspaceFolder}/.env",
-            "args": ["-A", "app.celeryapp.celery_worker.celery", "worker", "-l", "debug", "-E"]
+            "args": ["-A", "app.celeryapp.celery_worker.celery", "worker", "-P", "gevent", "-l", "info", "-E", "--concurrency=2"]
+        },
+        {
+            "name": "Python : Celery Workers (Linux of MacOS)",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "envFile": "${workspaceFolder}/.env",
+            "args": ["-A", "app.celeryapp.celery_worker.celery", "worker", "-l", "info", "-E", "--concurrency=2"]
         }
+
     ]
 }
