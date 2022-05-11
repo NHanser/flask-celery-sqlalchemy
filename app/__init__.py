@@ -19,7 +19,9 @@ from flask_security.datastore import SQLAlchemySessionUserDatastore
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
 from app.models.user import User, Role
-
+from app.models.feedeater import Feed, FeedResult, Article
+from app import celeryapp
+from app.extensions import FlaskCelery, IN_CELERY_WORKER_PROCESS
 
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
 
@@ -53,36 +55,11 @@ class MyAdminIndexView(AdminIndexView):
         # redirect to login page if user doesn't have access
         return redirect(url_for('security.login', next=request.url))
 
-def create_app():
-    """Creates Flask instance"""
-    server = Flask(__name__)
-    mode = os.environ.get('MODE') or 'Develop'
-    if mode == 'Develop':
-        settings_obj = Develop
-    else:
-        settings_obj = Prod
-
-    server.config.from_object(settings_obj)
-    logging.info(f"Starting flask in {mode} mode ...")
-
-    register_extensions(server)
-    register_blueprints(server)
-    register_dashapps(server)
-
-    return server
-
 def register_extensions(server):
-    from app.extensions import celery
-    from app.extensions import db
-    from app.extensions import login
-    from app.extensions import migrate
-    from app.extensions import bootstrap
-    from app.extensions import mail
-    from app.extensions import csrf_protect
-    from app.extensions import security
-    from app.extensions import admin
-
-
+    from app.extensions import db, login, migrate, bootstrap, mail, csrf_protect, admin
+    if not IN_CELERY_WORKER_PROCESS:
+        from app.extensions import security
+    celeryapp.celery = FlaskCelery(server)
     with server.app_context():
         bootstrap.init_app(server)
         CORS(server)
@@ -91,13 +68,19 @@ def register_extensions(server):
         mail.init_app(server)
         csrf_protect.init_app(server)
         migrate.init_app(server, db)
-        celery.init_app(server)
+        
+
         CSRFProtect(server)
         user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
-        security.init_app(server,user_datastore)
+        if not IN_CELERY_WORKER_PROCESS:
+            security.init_app(server,user_datastore)
         admin.init_app(server, index_view = MyAdminIndexView())
         admin.add_view(ControllerModelView(User, db.session))
         admin.add_view(ControllerModelView(Role, db.session))
+        admin.add_view(ControllerModelView(Feed, db.session))
+        admin.add_view(ControllerModelView(FeedResult, db.session))
+        admin.add_view(ControllerModelView(Article, db.session))
+
 
 
 def register_blueprints(server):
@@ -190,7 +173,7 @@ def init_email_error_handler(app):
     Initialize a logger to send emails on error-level messages.
     Unhandled exceptions will now send an email message to app.config.ADMINS.
     """
-    if app.debug: return  # Do not send error emails while developing
+    if app.debug or True: return  # Do not send error emails while developing
 
     # Retrieve email settings from app.config
     host = app.config['MAIL_SERVER']

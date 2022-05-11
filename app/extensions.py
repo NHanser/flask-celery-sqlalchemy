@@ -13,7 +13,9 @@ from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
 from flask_security import Security
 from flask_admin import Admin
+import sys
 
+IN_CELERY_WORKER_PROCESS = sys.argv and 'worker' in sys.argv
 
 class FlaskCelery(Celery):
     """Celery class wrapper to make it work with flask instance"""
@@ -47,23 +49,14 @@ class FlaskCelery(Celery):
         self.app = app
         self.autodiscover_tasks(packages=['app.tasks'])
         self.conf.beat_schedule = TASK_SCHEDULE
+        self.config_from_object(app.config)
 
-        self.config_from_object(CelConfig)
-
-
-class CelConfig:
-    broker_url = "redis://redis:6379"
-    celery_result_backend = "redis://redis:6379"
-    broker = "redis://redis:6379"
-    backend = "redis://redis:6379"
-
-
-celery = FlaskCelery()
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 bootstrap = Bootstrap5()
 csrf_protect = CSRFProtect()
 mail = Mail()
-security = Security()
+if not IN_CELERY_WORKER_PROCESS:
+    security = Security()
 admin = Admin()

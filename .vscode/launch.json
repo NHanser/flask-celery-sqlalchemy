@@ -9,16 +9,21 @@
             "type": "python",
             "request": "launch",
             "module": "flask",
-            "env": {
-                "FLASK_APP": "app",
-                "FLASK_ENV": "development"
-            },
+            "envFile": "${workspaceFolder}/.env",
             "args": [
                 "run",
                 "--no-debugger",
                 "--no-reload"
             ],
             "jinja": true
+        },
+        {
+            "name": "Python : Celery Workers",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "envFile": "${workspaceFolder}/.env",
+            "args": ["-A", "app.celeryapp.celery_worker.celery", "worker", "-l", "debug", "-E"]
         }
     ]
 }

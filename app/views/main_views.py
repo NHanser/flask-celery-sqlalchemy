@@ -7,7 +7,7 @@ from flask_security import roles_required, auth_required
 
 from app import tasks
 from app.extensions import db
-from app.models.feedeater_models import Feed
+from app.models.feedeater import Feed
 from app.models.user import UserProfileForm
 
 from bs4 import BeautifulSoup
@@ -72,7 +72,7 @@ def task():
         tasks.fetch_articles.delay(feed.id)
 
     flash('Fetch articles task kicked off')
-    return render_template('main/home_page.html')
+    return render_template('layouts/base.html')
 
 
 @main_blueprint.route('/new-task', methods=['GET', 'POST'])
