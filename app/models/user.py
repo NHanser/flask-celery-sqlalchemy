@@ -8,7 +8,7 @@ from app.extensions import db
 from flask_security import UserMixin, RoleMixin
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-
+from flask import jsonify
 from app.extensions import login
 
 
@@ -42,6 +42,25 @@ class User(db.Model, UserMixin):
 
     def has_role(self, role):
         return role in self.roles
+
+    def __json__(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'username': self.username,
+            'password': self.password,
+            'last_login_at': self.last_login_at,
+            'current_login_at': self.current_login_at,
+            'last_login_ip': self.last_login_ip,
+            'current_login_ip': self.current_login_ip,
+            'login_count': self.login_count,
+            'active': self.active,
+            'confirmed_at': self.confirmed_at,
+            'fs_uniquifier': self.fs_uniquifier,
+            'active': self.active,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+        }
 
 
 

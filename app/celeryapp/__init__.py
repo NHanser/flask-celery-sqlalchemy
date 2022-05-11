@@ -12,11 +12,11 @@ CELERY_TASK_LIST = [
     'app.tasks',
 ]
 
-db_session = None
 celery = None
-
+db_session = None
 
 def create_celery_app(_app=None):
+    global celery
     """
     Create a new Celery object and tie together the Celery config to the app's config.
 
@@ -31,14 +31,25 @@ def create_celery_app(_app=None):
 
     celery = Celery(_app.import_name,
                     broker=_app.config['CELERY_BROKER_URL'],
-                    include=CELERY_TASK_LIST)
-    celery.conf.update(_app.config)
+                    include=CELERY_TASK_LIST,
+                    backend=_app.config['CELERY_BACKEND_URL'])
+
     always_eager = _app.config['TESTING'] or False
-    celery.conf.update({'CELERY_ALWAYS_EAGER': always_eager,
-                        'CELERY_RESULT_BACKEND': f"db+{_app.config['SQLALCHEMY_DATABASE_URI']}"})
+    CELERY_ACCEPT_CONTENT = ['json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_REDIS_MAX_CONNECTIONS = 5
+    celery.conf.update(redis_max_connections=CELERY_REDIS_MAX_CONNECTIONS,
+                       task_always_eager=always_eager,
+                       result_serializer=CELERY_RESULT_SERIALIZER,
+                       accept_content=CELERY_ACCEPT_CONTENT,
+                       result_backend=f"db+{_app.config['SQLALCHEMY_DATABASE_URI']}",
+                       task_serializer=CELERY_TASK_SERIALIZER)
+    celery.conf.update(_app.config)
+
     if _app.config['CELERY_REDIS_USE_SSL']:
         broker_use_ssl = {'ssl_cert_reqs': ssl.CERT_NONE}
-        celery.conf.update({'BROKER_USE_SSL': broker_use_ssl})
+        celery.conf.update(broker_use_ssl=broker_use_ssl)
 
     TaskBase = celery.Task
 

@@ -1,8 +1,12 @@
-from app.extensions import celery
+from app.celeryapp import celery
 from app.services import FeedEater
+import logging
+
+logger = logging.getLogger(__name__)
 
 @celery.task(name="fetch_articles_task")
 def fetch_articles(feed_id: int):
+    logger.info("Fetch articles started")
     feedeater = FeedEater()
     feedeater.fetch(feed_id)
 
@@ -12,4 +16,4 @@ def dummy_task():
     """
     Dummy task
     """
-    logging.info("Dummy task started")
+    logger.info("Dummy task started")

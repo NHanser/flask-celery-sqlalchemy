@@ -35,26 +35,18 @@ class Config:
     APP_NAME = "Flask-Celery-SQLAlchemy"
     APP_SYSTEM_ERROR_SUBJECT_LINE = APP_NAME + " system error"
 
+    app_run_env = "LOCAL"
+    if "APP_RUN_ENV" in environ:
+        app_run_env = environ["APP_RUN_ENV"]
+
     # Flask settings
     CSRF_ENABLED = True
 
     # Flask-SQLAlchemy settings
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Flask-User settings
-    USER_APP_NAME = APP_NAME
-    USER_ENABLE_CHANGE_PASSWORD = True  # Allow users to change their password
-    USER_ENABLE_CHANGE_USERNAME = False  # Allow users to change their username
-    USER_ENABLE_CONFIRM_EMAIL = True  # Force users to confirm their email
-    USER_ENABLE_FORGOT_PASSWORD = True  # Allow users to reset their passwords
-    USER_ENABLE_EMAIL = True  # Register with Email
-    USER_ENABLE_REGISTRATION = True  # Allow new users to register
-    USER_REQUIRE_RETYPE_PASSWORD = True  # Prompt for `retype password` in:
-    USER_ENABLE_USERNAME = False  # Register and Login with username
-    USER_AFTER_LOGIN_ENDPOINT = 'main.member_page'
-    USER_AFTER_LOGOUT_ENDPOINT = 'main.home_page'
+    CELERY_REDIS_USE_SSL = envir("CELERY_REDIS_USE_SSL")
 
-    
     # Need to be able to route backend flask API calls. Use 'accounts'
     # to be the Flask-Security endpoints.
     SECURITY_URL_PREFIX = '/api/accounts'
@@ -101,6 +93,18 @@ class Config:
         port = envir("DATABASE_PORT")
         SQLALCHEMY_DATABASE_URI = (f"postgresql://{user}:{password}@{host}:{port}/{database}")
 
+    # Celery
+    if app_run_env == "LOCAL":
+        CELERY_BROKER_URL = envir("CELERY_BROKER_URL")
+        CELERY_BACKEND_URL = envir("CELERY_BACKEND_URL")
+    elif app_run_env == "DOCKER":
+        CELERY_BROKER_URL = "pyamqp://admin:mypass@myapp-rabbitmq//"
+        CELERY_BACKEND_URL = "redis://myapp-redis"
+    elif app_run_env == "HEROKU":
+        CELERY_BROKER_URL = envir["CLOUDAMQP_URL"]
+        CELERY_BACKEND_URL = envir["REDIS_URL"]
+    
+
 
 @dataclass
 class Develop(Config):
@@ -117,11 +121,6 @@ class Prod(Config):
     FLASK_ENV = 'production'
     DEBUG = False
     testing = False
-
-
-
-
-
 
 
 TESTING = False
