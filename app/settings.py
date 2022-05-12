@@ -7,6 +7,7 @@ from os import path, makedirs, environ
 
 from dataclasses import dataclass
 from environs import Env
+from flask_security import uia_email_mapper, uia_username_mapper
 
 # Env variable config
 
@@ -58,6 +59,10 @@ class Config:
     SECURITY_REGISTERABLE = True
     #SECURITY_UNIFIED_SIGNIN = True
     SECURITY_USERNAME_ENABLE = True
+    SECURITY_USER_IDENTITY_ATTRIBUTES = [
+        {"email": {"mapper": uia_email_mapper, "case_insensitive": True}},
+        {"username": {"mapper": uia_username_mapper, "case_insensitive": True}},
+        ]
 
     # These need to be defined to handle redirects
     # As defined in the API documentation - they will receive the relevant context

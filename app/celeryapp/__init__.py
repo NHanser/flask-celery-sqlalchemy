@@ -32,7 +32,8 @@ def create_celery_app(_app=None):
     celery = Celery(_app.import_name,
                     broker=_app.config['CELERY_BROKER_URL'],
                     include=CELERY_TASK_LIST,
-                    backend=_app.config['CELERY_BACKEND_URL'])
+                    backend=_app.config['CELERY_BACKEND_URL'],
+                    app=_app)
 
     always_eager = _app.config['TESTING'] or False
     CELERY_ACCEPT_CONTENT = ['json']
