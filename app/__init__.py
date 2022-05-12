@@ -15,13 +15,14 @@ from flask_cors import CORS
 from flask_login import login_required, current_user
 from flask.helpers import get_root_path
 from flask_security import Security, auth_required
-from flask_security.datastore import SQLAlchemySessionUserDatastore
+from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
 from app.models.user import User, Role
 from app.models.feedeater import Feed, FeedResult, Article
 from app import celeryapp
 from app.extensions import FlaskCelery, IN_CELERY_WORKER_PROCESS
+from app.forms.flask_security_extensions import ExtendedLoginForm, ExtendedRegisterForm
 
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
 
@@ -56,10 +57,10 @@ class MyAdminIndexView(AdminIndexView):
         return redirect(url_for('security.login', next=request.url))
 
 def register_extensions(server):
-    from app.extensions import db, login, migrate, bootstrap, mail, csrf_protect, admin
+    from app.extensions import db, login, migrate, bootstrap, mail, csrf_protect, admin, oauth
     if not IN_CELERY_WORKER_PROCESS:
         from app.extensions import security
-    celeryapp.celery = FlaskCelery(server)
+    celeryapp.celery = FlaskCelery(app=server)
     with server.app_context():
         bootstrap.init_app(server)
         CORS(server)
@@ -68,12 +69,22 @@ def register_extensions(server):
         mail.init_app(server)
         csrf_protect.init_app(server)
         migrate.init_app(server, db)
+        oauth.init_app(server)
+        oauth.register(name='google',
+                       client_id=server.conf['GOOGLE_CLIENT_ID'],     
+                       client_secret=server.conf['GOOGLE_CLIENT_SECRET'],     
+                       access_token_url=server.conf['GOOGLE_REQUEST_TOKEN_URL'],     
+                       authorize_url=server.conf['GOOGLE_AUTH_URL'])
+
         
 
         CSRFProtect(server)
-        user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
+        user_datastore = SQLAlchemyUserDatastore(db, User, Role)
         if not IN_CELERY_WORKER_PROCESS:
-            security.init_app(server,user_datastore)
+            security.init_app(server,
+                              user_datastore, 
+                              confirm_register_form=ExtendedRegisterForm,
+                              login_form=ExtendedLoginForm)
         admin.init_app(server, index_view = MyAdminIndexView())
         admin.add_view(ControllerModelView(User, db.session))
         admin.add_view(ControllerModelView(Role, db.session))
@@ -87,10 +98,12 @@ def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
     from .views.main_views import main_blueprint
     #from .auth import routes as auth_routes
+    from .oauth import github_blueprint, google_blueprint
     from app.commands import commands_bp
 
     # Register Blueprints
     server.register_blueprint(main_blueprint)
+    app.register_blueprint(google_blueprint, url_prefix="/login")
     server.register_blueprint(commands_bp)
 
 

@@ -35,13 +35,6 @@ def member_page():
     return render_template('main/user_page.html')
 
 
-# The Admin page is accessible to users with the 'admin' role
-@main_blueprint.route('/admin')
-#@roles_required('admin')  # Limits access to users with the 'admin' role
-def admin_page():
-    return render_template('main/admin_page.html')
-
-
 @main_blueprint.route('/main/profile', methods=['GET', 'POST'])
 #@login_required
 def user_profile_page():
