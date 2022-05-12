@@ -3,12 +3,8 @@ from wtforms import StringField
 from flask_security.forms import Required
 
 
-class ExtendedRegisterForm(ConfirmRegisterForm):
-    username = StringField("Username", [Required()])
-
-
 class ExtendedLoginForm(LoginForm):
-    email = StringField("Username or Email Address", [Required()])
+    email = StringField("Email Address", [Required()])
 
     def validate(self):
         from flask_security.utils import (
@@ -23,10 +19,6 @@ class ExtendedLoginForm(LoginForm):
 
         # try login using email
         self.user = _datastore.find_user(email=self.email.data)
-
-        # if that didn't work try log in using the username
-        if self.user is None:
-            self.user = _datastore.find_user(username=self.email.data)
 
         if self.user is None:
             self.email.errors.append(get_message("USER_DOES_NOT_EXIST")[0])

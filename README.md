@@ -48,11 +48,11 @@ We assume that you have `git` and `virtualenv` and `virtualenvwrapper` installed
 
 # Configuring SMTP
 
-Copy the `local_settings_example.py` file to `local_settings.py`.
+Copy the `.env_template` file to `.env`.
 
-    cp app/local_settings_example.py app/local_settings.py
+    cp .env_template .env
 
-Edit the `local_settings.py` file.
+Edit the `.env` file.
 
 Specifically set all the MAIL_... settings to match your SMTP settings
 
@@ -67,19 +67,13 @@ See https://help.yahoo.com/kb/SLN27791.html
 
     # Create DB tables and populate the roles and users tables
     flask db init
-    python manage.py init_db
-
-    # Or if you have Fabric installed:
-    fab init_db
-
+    flask db migrate -m "Initial version"
+    flask db upgrade
 
 ## Running the app
 
     # Start the Flask development web server
-    python manage.py runserver
-
-    # Or if you have Fabric installed:
-    fab runserver
+    flask run
 
 Point your web browser to http://localhost:5000/
 

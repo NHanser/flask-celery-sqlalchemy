@@ -58,10 +58,9 @@ class Config:
     SECURITY_CHANGEABLE = True
     SECURITY_REGISTERABLE = True
     #SECURITY_UNIFIED_SIGNIN = True
-    SECURITY_USERNAME_ENABLE = True
+    #SECURITY_USERNAME_ENABLE = True
     SECURITY_USER_IDENTITY_ATTRIBUTES = [
         {"email": {"mapper": uia_email_mapper, "case_insensitive": True}},
-        {"username": {"mapper": uia_username_mapper, "case_insensitive": True}},
         ]
 
     # These need to be defined to handle redirects
@@ -108,6 +107,9 @@ class Config:
     elif app_run_env == "HEROKU":
         CELERY_BROKER_URL = envir["CLOUDAMQP_URL"]
         CELERY_BACKEND_URL = envir["REDIS_URL"]
+
+    GOOGLE_CLIENT_ID = envir("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = envir("GOOGLE_CLIENT_SECRET")
     
 
 
