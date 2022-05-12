@@ -6,7 +6,7 @@ import os
 import dash
 import redis
 
-from flask import Flask
+from flask import Flask, redirect, url_for, request
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -22,8 +22,8 @@ from app.models.user import User, Role
 from app.models.feedeater import Feed, FeedResult, Article
 from app import celeryapp
 from app.extensions import FlaskCelery, IN_CELERY_WORKER_PROCESS
-from app.forms.flask_security_extensions import ExtendedLoginForm, ExtendedRegisterForm
-
+from app.forms.flask_security_extensions import ExtendedLoginForm
+from app.oauth import oauth_registration
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
 
 logging.basicConfig(#filename=LOGGING_FILE,
@@ -36,9 +36,6 @@ from flask_security import RegisterForm, LoginForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
-class ExtendedRegisterForm(RegisterForm):
-    first_name = StringField('First Name', [DataRequired()])
-    last_name = StringField('Last Name', [DataRequired()])
 
 class ControllerModelView(ModelView):
     def is_accessible(self):
@@ -70,20 +67,13 @@ def register_extensions(server):
         csrf_protect.init_app(server)
         migrate.init_app(server, db)
         oauth.init_app(server)
-        oauth.register(name='google',
-                       client_id=server.conf['GOOGLE_CLIENT_ID'],     
-                       client_secret=server.conf['GOOGLE_CLIENT_SECRET'],     
-                       access_token_url=server.conf['GOOGLE_REQUEST_TOKEN_URL'],     
-                       authorize_url=server.conf['GOOGLE_AUTH_URL'])
-
-        
-
+        oauth_registration(oauth)
         CSRFProtect(server)
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
         if not IN_CELERY_WORKER_PROCESS:
             security.init_app(server,
                               user_datastore, 
-                              confirm_register_form=ExtendedRegisterForm,
+                              confirm_register_form=RegisterForm,
                               login_form=ExtendedLoginForm)
         admin.init_app(server, index_view = MyAdminIndexView())
         admin.add_view(ControllerModelView(User, db.session))
@@ -98,12 +88,12 @@ def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
     from .views.main_views import main_blueprint
     #from .auth import routes as auth_routes
-    from .oauth import github_blueprint, google_blueprint
+    from app.oauth import google_blueprint
     from app.commands import commands_bp
 
     # Register Blueprints
     server.register_blueprint(main_blueprint)
-    app.register_blueprint(google_blueprint, url_prefix="/login")
+    server.register_blueprint(google_blueprint, url_prefix="/google")
     server.register_blueprint(commands_bp)
 
 

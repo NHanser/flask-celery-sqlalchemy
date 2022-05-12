@@ -27,7 +27,7 @@ if not IN_CELERY_WORKER_PROCESS:
         if delete:
             print("Deleting database content")
             db.drop_all()
-        db.create_all()
+        #db.create_all() # use flask db migrate to create models
 
 
     @commands_bp.cli.command()
@@ -76,10 +76,11 @@ if not IN_CELERY_WORKER_PROCESS:
 
         # Adding roles
         admin_role = find_or_create_role('admin', 'Admin')
+        basic_role = find_or_create_role('basic', 'Basic')
 
         # Add users
-        user = find_or_create_user('admin@example.com', 'admin', 'Admin', 'Example', 'Password1', admin_role)
-        user = find_or_create_user('member@example.com', 'member', 'Member', 'Example', 'Password1')
+        user = find_or_create_user('admin@example.com', 'Password1', admin_role)
+        user = find_or_create_user('member@example.com', 'Password1', basic_role)
 
         # Save to DB
         db.session.commit()
@@ -94,14 +95,11 @@ if not IN_CELERY_WORKER_PROCESS:
         return role
 
 
-    def find_or_create_user(email, username, first_name, last_name, password, role=None):
+    def find_or_create_user(email, password, role=None):
         # Find existing user or create new user 
-        user = User.query.filter(User.username == username).first()
+        user = User.query.filter(User.email == email).first()
         if not user:
             new_user = security.datastore.create_user(email=email,
-                        username=username,
-                        first_name=first_name,
-                        last_name=last_name,
                         password=password,
                         active=True,
                         confirmed_at=datetime.datetime.utcnow())

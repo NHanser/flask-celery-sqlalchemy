@@ -10,8 +10,6 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from flask import jsonify
 from app.extensions import login
-from flask_bcrypt import Bcrypt
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
@@ -25,23 +23,17 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user' 
     id = db.Column(db.Integer, primary_key=True) 
     email = db.Column(db.String(255), unique=True) 
-    username = db.Column(db.String(255)) 
     password = db.Column(db.String(255)) 
     last_login_at = db.Column(db.DateTime()) 
     current_login_at = db.Column(db.DateTime()) 
     last_login_ip = db.Column(db.String(100)) 
     current_login_ip = db.Column(db.String(100)) 
     login_count = db.Column(db.Integer) 
-    active = db.Column(db.Boolean()) 
+    active = db.Column(db.Boolean(), nullable=False, server_default='0') 
     confirmed_at = db.Column(db.DateTime()) 
+    profile_pic = db.Column(db.String(), nullable=True)
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
-
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
-    
-    # User information
-    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
-    first_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
-    last_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
 
     def has_role(self, role):
         return role in self.roles
@@ -50,7 +42,6 @@ class User(db.Model, UserMixin):
         return {
             'id': self.id,
             'email': self.email,
-            'username': self.username,
             'password': self.password,
             'last_login_at': self.last_login_at,
             'current_login_at': self.current_login_at,
@@ -60,13 +51,7 @@ class User(db.Model, UserMixin):
             'active': self.active,
             'confirmed_at': self.confirmed_at,
             'fs_uniquifier': self.fs_uniquifier,
-            'active': self.active,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
         }
-
-
-
 
 # Define the Role data model
 class Role(db.Model, RoleMixin):
@@ -96,25 +81,4 @@ class RolesUsers(db.Model):
 
 # Define the User profile form
 class UserProfileForm(FlaskForm):
-    first_name = StringField('First name', validators=[
-        validators.DataRequired('First name is required')])
-    last_name = StringField('Last name', validators=[
-        validators.DataRequired('Last name is required')])
     submit = SubmitField('Save')
-
-class OAuth(OAuthConsumerMixin, db.Model):
-    __table_args__ = (db.UniqueConstraint("provider", "provider_user_id"),)
-    provider_user_id = db.Column(db.String(256), nullable=False)
-    provider_user_login = db.Column(db.String(256), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
-    user = db.relationship(
-        User,
-        # This `backref` thing sets up an `oauth` property on the User model,
-        # which is a dictionary of OAuth models associated with that user,
-        # where the dictionary key is the OAuth provider name.
-        backref=db.backref(
-            "oauth",
-            collection_class=attribute_mapped_collection("provider"),
-            cascade="all, delete-orphan",
-        ),
-    )
