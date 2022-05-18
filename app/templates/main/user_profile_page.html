@@ -1,23 +1,57 @@
-{% extends "main/main_base.html" %}  {# main/main_base.html extends layout.html #}
-
-{% block content %}
-<h1>User Profile</h1>
-
-<p><a href="{{ url_for('security.change_password') }}">Change password</a></p>
+{% extends "layouts/base.html" %}  {# main/main_base.html extends layout.html #}
 
 {% from "common/form_macros.html" import render_field, render_submit_field %}
-<form action="" method="POST" class="form" role="form">
-  <div class="row">
-    <div class="col-sm-6 col-md-5 col-lg-4">
-    {{ form.hidden_tag() }}
-
-    {{ render_field(form.first_name, tabindex=240) }}
-
-    {{ render_field(form.last_name, tabindex=250) }}
-
-    {{ render_submit_field(form.submit, tabindex=280) }}
+ 
+{% block content %}
+ 
+<div class="row">
+  <div class="col-sm-6">
+    <h2>User Profile</h2>
+    <div class="card-body">
+      <div class="card">
+        <div class="card-header">
+          Email Address
+        </div>
+        <div class="card-body">
+          <p class="card-text">{{current_user.email}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card">
+        <div class="card-header">
+          Account Actions
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><a href="#">Change Email</a></li>
+          <li class="list-group-item"> <a href="#">Change Password</a></li>
+          {% if not current_user.email_confirmed %}
+          <li class="list-group-item"><a href="#">Resend Email Confirmation</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card">
+        <div class="card-header">
+          Statistics
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Member since: {{ current_user.registered_on.strftime("%A %B %d, %Y") }}</li>
+          {% if current_user.last_login_at != None %}
+          <li class="list-group-item">Last Logged In: {{ current_user.last_login_at.strftime("%A %B %d, %Y") }}</li>
+          {% else %}
+          <li class="list-group-item">First time logged in. Welcome!</li>
+          {% endif %}
+          {% if current_user.email_confirmed %}
+          <li class="list-group-item">Email confirmed on: {{ current_user.confirmed_at.strftime("%A %B %d, %Y") }}</li>
+          {% else %}
+          <li class="list-group-item">Email has not been confirmed!</li>
+          {% endif %}
+        </ul>
+      </div>
     </div>
   </div>
-</form>
+</div>
 
 {% endblock %}

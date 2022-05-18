@@ -36,7 +36,7 @@ def member_page():
 
 
 @main_blueprint.route('/main/profile', methods=['GET', 'POST'])
-#@login_required
+@auth_required()
 def user_profile_page():
     # Initialize form
     form = UserProfileForm(request.form, obj=current_user)

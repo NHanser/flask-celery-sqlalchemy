@@ -1,6 +1,7 @@
 from flask_security.forms import ConfirmRegisterForm, LoginForm
 from wtforms import StringField
 from flask_security.forms import Required
+import datetime
 
 
 class ExtendedLoginForm(LoginForm):
@@ -39,4 +40,7 @@ class ExtendedLoginForm(LoginForm):
         if not self.user.is_active:
             self.email.errors.append(get_message("DISABLED_ACCOUNT")[0])
             return False
+
+        self.user.last_login_at = user.current_logged_in
+        self.user.current_login_at = datetime.datetime.utcnow()
         return True

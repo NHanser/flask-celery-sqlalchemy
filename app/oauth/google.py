@@ -55,9 +55,12 @@ def authorize():
                     email=users_email,
                     active=True,
                     confirmed_at=datetime.datetime.utcnow(),
+                    registered_on = datetime.datetime.utcnow(),
+                    current_login_at = datetime.datetime.utcnow(),
                     roles=['basic'])
         db.session.commit()
         
     # Begin user session by logging the user in
     login_user(security_user, remember=True, authn_via=["google-authenticator"])
+    security.datastore.commit()
     return redirect('/')
