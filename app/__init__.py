@@ -38,8 +38,8 @@ from wtforms.validators import DataRequired
 
 from flask_security import MailUtil
 class MyMailUtil(MailUtil):
-
     def send_mail(self, template, subject, recipient, sender, body, html, user, **kwargs):
+        from app.tasks import send_flask_mail
         send_flask_mail.delay(
             subject=subject,
             sender=sender,
@@ -54,7 +54,7 @@ class ControllerModelView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         # redirect to login page if user doesn't have access
-        return redirect(url_for('security.login', next=request.url))
+        return redirect(url_for('security.login', next=request.endpoint))
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
@@ -62,7 +62,7 @@ class MyAdminIndexView(AdminIndexView):
 
     def inaccessible_callback(self, name, **kwargs):
         # redirect to login page if user doesn't have access
-        return redirect(url_for('security.login', next=request.url))
+        return redirect(url_for('security.login', next=request.endpoint))
 
 def register_extensions(server):
     from app.extensions import db, login, migrate, bootstrap, mail, csrf_protect, admin, oauth

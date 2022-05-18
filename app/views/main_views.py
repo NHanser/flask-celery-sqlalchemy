@@ -21,7 +21,8 @@ main_blueprint = Blueprint('main', __name__, template_folder='templates',
 def home_page():
     return render_template('layouts/base.html')
 
-@main_blueprint.route('/dashboard')
+@main_blueprint.route('/dashboard/')
+@auth_required()
 def dash_page():
     soup = BeautifulSoup('/dashapp', 'html.parser')
     footer = soup.footer
@@ -30,7 +31,7 @@ def dash_page():
 
 # The User page is accessible to authenticated users (users that have logged in)
 @main_blueprint.route('/member')
-#@login_required  # Limits access to authenticated users
+@auth_required()
 def member_page():
     return render_template('main/user_page.html')
 
