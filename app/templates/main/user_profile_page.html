@@ -23,10 +23,10 @@
           Account Actions
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><a href="#">Change Email</a></li>
-          <li class="list-group-item"> <a href="#">Change Password</a></li>
+          <li class="list-group-item"><a href="{{ url_for('security.modify_email') }}">Change Email</a></li>
+          <li class="list-group-item"> <a href="{{ url_for('security.change_password') }}">Change Password</a></li>
           {% if not current_user.email_confirmed %}
-          <li class="list-group-item"><a href="#">Resend Email Confirmation</a></li>
+          <li class="list-group-item"><a href="{{ url_for('security.send_confirmation') }}">Resend Email Confirmation</a></li>
           {% endif %}
         </ul>
       </div>

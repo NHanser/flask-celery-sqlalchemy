@@ -36,6 +36,17 @@ from flask_security import RegisterForm, LoginForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
+from flask_security import MailUtil
+class MyMailUtil(MailUtil):
+
+    def send_mail(self, template, subject, recipient, sender, body, html, user, **kwargs):
+        send_flask_mail.delay(
+            subject=subject,
+            sender=sender,
+            recipients=[recipient],
+            body=body,
+            html=html,
+        )
 
 class ControllerModelView(ModelView):
     def is_accessible(self):
@@ -74,7 +85,8 @@ def register_extensions(server):
             security.init_app(server,
                               user_datastore, 
                               confirm_register_form=RegisterForm,
-                              login_form=ExtendedLoginForm)
+                              login_form=ExtendedLoginForm,
+                              mail_util_cls=MyMailUtil)
         admin.init_app(server, index_view = MyAdminIndexView())
         admin.add_view(ControllerModelView(User, db.session))
         admin.add_view(ControllerModelView(Role, db.session))
