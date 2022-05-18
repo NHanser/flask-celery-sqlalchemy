@@ -23,9 +23,13 @@
           Account Actions
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><a href="{{ url_for('security.modify_email') }}">Change Email</a></li>
+          <li class="list-group-item"><a href="#">Change Email (not implemented)</a></li>
+          {% if current_user.password != none %}
           <li class="list-group-item"> <a href="{{ url_for('security.change_password') }}">Change Password</a></li>
-          {% if not current_user.email_confirmed %}
+          {% else %}
+          <li class="list-group-item">To set a password, logout and click forgot password</li>
+          {% endif %}
+          {% if not current_user.active %}
           <li class="list-group-item"><a href="{{ url_for('security.send_confirmation') }}">Resend Email Confirmation</a></li>
           {% endif %}
         </ul>
@@ -37,14 +41,14 @@
           Statistics
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">Member since: {{ current_user.registered_on.strftime("%A %B %d, %Y") }}</li>
-          {% if current_user.last_login_at != None %}
-          <li class="list-group-item">Last Logged In: {{ current_user.last_login_at.strftime("%A %B %d, %Y") }}</li>
+          <li class="list-group-item">Member since: {{ current_user.registered_on.strftime("%A %B %d, %Y at %H:%M:%S") }}</li>
+          {% if current_user.last_login_at != none %}
+          <li class="list-group-item">Last Logged In: {{ current_user.last_login_at.strftime("%A %B %d, %Y at %H:%M:%S") }}</li>
           {% else %}
           <li class="list-group-item">First time logged in. Welcome!</li>
           {% endif %}
-          {% if current_user.email_confirmed %}
-          <li class="list-group-item">Email confirmed on: {{ current_user.confirmed_at.strftime("%A %B %d, %Y") }}</li>
+          {% if current_user.active %}
+          <li class="list-group-item">Email confirmed on: {{ current_user.confirmed_at.strftime("%A %B %d, %Y at %H:%M:%S") }}</li>
           {% else %}
           <li class="list-group-item">Email has not been confirmed!</li>
           {% endif %}

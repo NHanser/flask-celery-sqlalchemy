@@ -26,6 +26,7 @@ def authorize():
 def login():
     google = oauth.create_client('google')  # create the google oauth client
     redirect_uri = url_for('google.authorize', _external=True)
+    session['next'] = request.args.get('next')
     return google.authorize_redirect(redirect_uri)
 
 
@@ -63,4 +64,6 @@ def authorize():
     # Begin user session by logging the user in
     login_user(security_user, remember=True, authn_via=["google-authenticator"])
     security.datastore.commit()
+    if 'next' in session and session['next'] is not None:
+        return redirect(session['next'])
     return redirect('/')

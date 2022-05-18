@@ -41,6 +41,6 @@ class ExtendedLoginForm(LoginForm):
             self.email.errors.append(get_message("DISABLED_ACCOUNT")[0])
             return False
 
-        self.user.last_login_at = user.current_logged_in
+        self.user.last_login_at = self.user.current_login_at
         self.user.current_login_at = datetime.datetime.utcnow()
         return True

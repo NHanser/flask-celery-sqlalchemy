@@ -31,7 +31,7 @@ def register_callbacks(dashapp):
         State('user-store', 'data'))
     def cur_user(args, data):
         if current_user.is_authenticated:
-            return current_user.username
+            return current_user.email
 
     @dashapp.callback(Output('username', 'children'), Input('user-store', 'data'))
     def username(data):

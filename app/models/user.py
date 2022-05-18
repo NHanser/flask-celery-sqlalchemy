@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     current_login_at = db.Column(db.DateTime()) 
     last_login_ip = db.Column(db.String(100)) 
     current_login_ip = db.Column(db.String(100)) 
-    login_count = db.Column(db.Integer) 
+    login_count = db.Column(db.Integer)
     active = db.Column(db.Boolean(), nullable=False, server_default='0') 
     confirmed_at = db.Column(db.DateTime()) 
     registered_on = db.Column(db.DateTime()) 
