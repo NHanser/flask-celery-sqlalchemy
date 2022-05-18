@@ -80,7 +80,7 @@
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
                         <li><a class="dropdown-item" href="#"><i class="bi bi-plus-circle"></i> New project...</a></li>
                         <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.user_profile_page') }}"><i class="bi bi-person-circle"></i> Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         <li><a class="dropdown-item" href="{{ url_for('security.logout') }}"><i class="bi bi-box-arrow-right"></i> Sign out</a></li>

@@ -69,6 +69,10 @@ See https://help.yahoo.com/kb/SLN27791.html
     flask db init
     flask db migrate -m "Initial version"
     flask db upgrade
+# fill the database with 2 sample users
+    flask init create-users
+# create feeds
+    flask init create-feeds
 
 ## Running the app
 

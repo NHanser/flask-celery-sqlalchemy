@@ -31,6 +31,7 @@ class User(db.Model, UserMixin):
     login_count = db.Column(db.Integer) 
     active = db.Column(db.Boolean(), nullable=False, server_default='0') 
     confirmed_at = db.Column(db.DateTime()) 
+    registered_on = db.Column(db.DateTime()) 
     profile_pic = db.Column(db.String(), nullable=True)
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
@@ -50,6 +51,7 @@ class User(db.Model, UserMixin):
             'login_count': self.login_count,
             'active': self.active,
             'confirmed_at': self.confirmed_at,
+            'registered_on': self.registered_on,
             'fs_uniquifier': self.fs_uniquifier,
         }
 

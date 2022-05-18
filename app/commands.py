@@ -102,7 +102,9 @@ if not IN_CELERY_WORKER_PROCESS:
             new_user = security.datastore.create_user(email=email,
                         password=password,
                         active=True,
-                        confirmed_at=datetime.datetime.utcnow())
+                        confirmed_at=datetime.datetime.utcnow(),
+                        registered_on = datetime.datetime.utcnow(),
+                        current_login_at = datetime.datetime.utcnow())
             
             if role:
                 new_user.roles.append(role)
