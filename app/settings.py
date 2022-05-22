@@ -50,7 +50,7 @@ class Config:
 
     # Need to be able to route backend flask API calls. Use 'accounts'
     # to be the Flask-Security endpoints.
-    SECURITY_URL_PREFIX = '/api/accounts'
+    SECURITY_URL_PREFIX = '/user'
     SECURITY_PASSWORD_SALT = envir("SECURITY_PASSWORD_SALT")
     SECURITY_RECOVERABLE = True
     SECURITY_TRACKABLE = True

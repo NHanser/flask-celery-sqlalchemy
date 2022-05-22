@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python : Fichier actuel",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python : Flask",
             "type": "python",
             "request": "launch",
@@ -24,7 +32,17 @@
             "request": "launch",
             "module": "celery",
             "envFile": "${workspaceFolder}/.env",
-            "args": ["-A", "app.celeryapp.celery_worker.celery", "worker", "-P", "gevent", "-l", "info", "-E", "--concurrency=2"]
+            "args": [
+                "-A",
+                "app.celeryapp.celery_worker.celery",
+                "worker",
+                "-P",
+                "gevent",
+                "-l",
+                "info",
+                "-E",
+                "--concurrency=2"
+            ]
         },
         {
             "name": "Python : Celery Workers (Linux of MacOS)",
@@ -32,8 +50,15 @@
             "request": "launch",
             "module": "celery",
             "envFile": "${workspaceFolder}/.env",
-            "args": ["-A", "app.celeryapp.celery_worker.celery", "worker", "-l", "info", "-E", "--concurrency=2"]
+            "args": [
+                "-A",
+                "app.celeryapp.celery_worker.celery",
+                "worker",
+                "-l",
+                "info",
+                "-E",
+                "--concurrency=2"
+            ]
         }
-
     ]
 }

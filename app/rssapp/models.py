@@ -58,3 +58,5 @@ class FeedResult(db.Model):
 
     feed_id = db.Column(db.Integer(), db.ForeignKey('feed.id', ondelete='CASCADE'), nullable=False)
     feed = db.relationship('Feed', backref=db.backref('results', lazy='dynamic'))
+
+

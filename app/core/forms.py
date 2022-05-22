@@ -3,7 +3,6 @@ from wtforms import StringField
 from flask_security.forms import Required
 import datetime
 
-
 class ExtendedLoginForm(LoginForm):
     email = StringField("Email Address", [Required()])
 

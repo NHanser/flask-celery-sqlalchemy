@@ -6,7 +6,7 @@ import feedparser
 from attr import attrib, attrs
 
 from app.extensions import db
-from app.models import feedeater as models
+from app.rssapp.models import rssapp as models
 
 
 @attrs
