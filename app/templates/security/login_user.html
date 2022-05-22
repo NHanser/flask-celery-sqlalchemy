@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+{% extends "core/base.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors %}
 
 {% block title %}
@@ -16,8 +16,11 @@ Login
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
         <div class="card bg-dark text-white" style="border-radius: 1rem;">
-          <div class="card-body p-5 text-center">
-            <div class="mb-md-5 mt-md-3 pb-2">
+          <div class="card-header text-center">
+            <i class="fs-5 bi-box-arrow-in-right"></i><span class="ms-1 d-none d-sm-inline">Sign in</span>
+          </div>
+          <div class="card-body py-1 px-3 text-center">
+            <div class="px-2">
               <div class="d-flex justify-content-center text-center mt-4 pt-1">
                 <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
                 <a href="#!" class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>

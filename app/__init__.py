@@ -18,13 +18,14 @@ from flask_security import Security, auth_required
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
-from app.models.user import User, Role
-from app.models.feedeater import Feed, FeedResult, Article
+from app.users.models import User, Role
+from app.rssapp.models import Feed, FeedResult, Article
 from app import celeryapp
 from app.extensions import FlaskCelery, IN_CELERY_WORKER_PROCESS
-from app.forms.flask_security_extensions import ExtendedLoginForm
+from app.core.forms import ExtendedLoginForm
 from app.oauth import oauth_registration
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
+from app.core.models import MyMailUtil
 
 logging.basicConfig(#filename=LOGGING_FILE,
                     #filemode='a',
@@ -35,18 +36,6 @@ logging.basicConfig(#filename=LOGGING_FILE,
 from flask_security import RegisterForm, LoginForm
 from wtforms import StringField
 from wtforms.validators import DataRequired
-
-from flask_security import MailUtil
-class MyMailUtil(MailUtil):
-    def send_mail(self, template, subject, recipient, sender, body, html, user, **kwargs):
-        from app.tasks import send_flask_mail
-        send_flask_mail.delay(
-            subject=subject,
-            sender=sender,
-            recipients=[recipient],
-            body=body,
-            html=html,
-        )
 
 class ControllerModelView(ModelView):
     def is_accessible(self):
@@ -98,15 +87,18 @@ def register_extensions(server):
 
 def register_blueprints(server):
     # Import parts of our application TODO : to be separated in several functional parts
-    from .views.main_views import main_blueprint
-    #from .auth import routes as auth_routes
+    from app.core.routes import core_bp
     from app.oauth import google_blueprint
     from app.commands import commands_bp
+    from app.dashapp.routes import dash_bp
+    from app.users.routes import users_bp
 
     # Register Blueprints
-    server.register_blueprint(main_blueprint)
+    server.register_blueprint(core_bp)
     server.register_blueprint(google_blueprint, url_prefix="/google")
     server.register_blueprint(commands_bp)
+    server.register_blueprint(dash_bp)
+    server.register_blueprint(users_bp, url_prefix="/user")
 
 
 def register_wtforms(server):
@@ -165,30 +157,23 @@ def create_app(extra_config_settings={}):
     # Load extra settings from extra_config_settings param
     server.config.update(extra_config_settings)
 
-    #from app.models.user import User
-
     register_extensions(server)
     register_blueprints(server)
     register_dashapps(server)
-    #register_UserManagement(server)
    
     # Setup an error-logger to send emails to app.config.ADMINS
     init_email_error_handler(server)
 
     return server
-
-def register_security(server):
-    # Setup Flask-Security
-    user_datastore = SQLAlchemySessionUserDatastore(db.session, User, Role)
-    security = Security(server, user_datastore, register_form=ExtendedRegisterForm)
-
+    
 
 def init_email_error_handler(app):
     """
     Initialize a logger to send emails on error-level messages.
     Unhandled exceptions will now send an email message to app.config.ADMINS.
     """
-    if app.debug or True: return  # Do not send error emails while developing
+    mode = os.environ.get('MODE') or 'Develop'
+    if app.debug and mode == "Develop": return  # Do not send error emails while developing
 
     # Retrieve email settings from app.config
     host = app.config['MAIL_SERVER']

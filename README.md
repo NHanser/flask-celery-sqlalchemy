@@ -4,18 +4,27 @@ This example app demonstrates how to write Celery tasks that work with Flask and
 SQLAlchemy. I had a hard time finding a complete example that worked correctly.
 
 Based on the [the Flask-User-Starter-App](https://github.com/lingthio/Flask-User-starter-app).
-Other references : https://github.com/singingwolfboy/flask-dance-google-security-sqla
+Other references : 
 
 ## Code characteristics
 
-* Tested on Python 3.9
+* Tested on Python 3.10
 * Well organized directories with lots of comments
     * app
-        * commands
-        * models
+        * celeryapp
+        * core
+        * dashapp
+        * oauth
+        * rssapp
         * static
         * templates
-        * views
+
+        * commands.py
+        * extensions.py
+        * scheduled_tasks.py
+        * settings.py
+
+        
     * tests
 * Includes test framework (`py.test`)
 * Includes database migration framework (`alembic`)

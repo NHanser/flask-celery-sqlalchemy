@@ -33,6 +33,8 @@ numpy = "*"
 bleach = "*"
 beautifulsoup4 = "*"
 authlib = "*"
+bcrypt = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.10"

@@ -1,16 +1,8 @@
-# Copyright 2014 SolidBuilds.com. All rights reserved
-#
-# Authors: Ling Thio <ling.thio@gmail.com>
-
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, validators
+from wtforms import SubmitField
 from app.extensions import db
 from flask_security import UserMixin, RoleMixin
-from werkzeug.security import check_password_hash
-from werkzeug.security import generate_password_hash
-from flask import jsonify
 from app.extensions import login
-from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
 @login.user_loader

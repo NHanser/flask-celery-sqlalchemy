@@ -47,7 +47,7 @@ class FlaskCelery(Celery):
 
     def init_app(self, app):
         self.app = app
-        self.autodiscover_tasks(packages=['app.tasks'])
+        self.autodiscover_tasks(packages=['app.core.tasks', 'app.rssapp.tasks'])
         self.conf.beat_schedule = TASK_SCHEDULE
         self.config_from_object(app.config)
 

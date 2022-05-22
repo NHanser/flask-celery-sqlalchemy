@@ -46,7 +46,7 @@
                     </li>
                     {% if current_user.is_authenticated %}
                     <li>
-                        <a href="{{ url_for('main.dash_page') }}" class="nav-link px-sm-0 px-2">
+                        <a href="{{ url_for('dash_bp.dash_page') }}" class="nav-link px-sm-0 px-2">
                             <i class="fs-5 bi-speedometer2"></i><span class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
                     </li>
                     
@@ -60,15 +60,6 @@
                             <i class="fs-5 bi-people"></i><span class="ms-1 d-none d-sm-inline">Admin</span> </a>
                     </li>
                     {% endif %}
-                    {% else %}
-                    <li>
-                        <a href="{{ url_for('security.register') }}" class="nav-link px-sm-0 px-2">
-                            <i class="fs-5 bi-people"></i><span class="ms-1 d-none d-sm-inline">Sign up</span> </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('security.login') }}" class="nav-link px-sm-0 px-2">
-                            <i class="fs-5 bi-box-arrow-in-right"></i><span class="ms-1 d-none d-sm-inline">Sign in</span> </a>
-                    </li>
                     {% endif %}
                 </ul>
                 {% if current_user.is_authenticated %}
@@ -80,7 +71,7 @@
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
                         <li><a class="dropdown-item" href="#"><i class="bi bi-plus-circle"></i> New project...</a></li>
                         <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('main.user_profile_page') }}"><i class="bi bi-person-circle"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('users_bp.user_profile_page') }}"><i class="bi bi-person-circle"></i> Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         <li><a class="dropdown-item" href="{{ url_for('security.logout') }}"><i class="bi bi-box-arrow-right"></i> Sign out</a></li>
