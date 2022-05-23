@@ -6,15 +6,15 @@ from .utils import create_fake_role, create_fake_user, set_current_user
 from flask import url_for
 
 
-def test_404(myapp):
+def test_404(app, client):
     user = create_fake_user(
-        myapp.user_cls, roles=create_fake_role(myapp.role_cls, "basic")
+        app.user_cls, roles=create_fake_role(app.role_cls, "basic")
     )
-    set_current_user(myapp.app, user)
+    set_current_user(app, user)
 
-    resp = myapp.test_client.get(
+    resp = client.get(
         "/unknown_page",
-        headers={myapp.app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"},
+        headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"},
     )
     assert resp.status_code == 404
 
