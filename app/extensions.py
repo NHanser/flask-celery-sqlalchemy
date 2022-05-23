@@ -57,7 +57,6 @@ login = LoginManager()
 bootstrap = Bootstrap5()
 csrf_protect = CSRFProtect()
 mail = Mail()
-if not IN_CELERY_WORKER_PROCESS:
-    security = Security()
+security = Security()
 admin = Admin()
 oauth = OAuth()
