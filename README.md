@@ -97,11 +97,8 @@ You can make use of the following users:
 
 ## Running the automated tests
 
-    # Start the Flask development web server
-    py.test tests/
-
-    # Or if you have Fabric installed:
-    fab test
+    # Run pytest
+    python -m pytest --setup-show --cov=app
 
 
 ## Trouble shooting
@@ -118,7 +115,6 @@ With thanks to the following Flask extensions:
 * [Flask-Login](https://flask-login.readthedocs.io/)
 * [Flask-Migrate](https://flask-migrate.readthedocs.io/)
 * [Flask-Script](https://flask-script.readthedocs.io/)
-* [Flask-User](http://flask-user.readthedocs.io/en/v0.6/)
 
 <!-- Please consider leaving this line. Thank you -->
 [Flask-User-starter-app](https://github.com/lingthio/Flask-User-starter-app) was used as a starting point for this code repository.
