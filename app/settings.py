@@ -46,7 +46,7 @@ class Config:
     # Flask-SQLAlchemy settings
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    CELERY_REDIS_USE_SSL = envir("CELERY_REDIS_USE_SSL")
+    CELERY_REDIS_USE_SSL = (envir("CELERY_REDIS_USE_SSL") == 'True')
 
     # Need to be able to route backend flask API calls. Use 'accounts'
     # to be the Flask-Security endpoints.
@@ -62,7 +62,7 @@ class Config:
     SECURITY_USER_IDENTITY_ATTRIBUTES = [
         {"email": {"mapper": uia_email_mapper, "case_insensitive": True}},
         ]
-
+    SECURITY_EMAIL_SENDER = envir("SECURITY_EMAIL_SENDER")
     # These need to be defined to handle redirects
     # As defined in the API documentation - they will receive the relevant context
     SECURITY_POST_CONFIRM_VIEW = "/confirmed"
@@ -102,14 +102,23 @@ class Config:
         CELERY_BROKER_URL = envir("CELERY_BROKER_URL")
         CELERY_BACKEND_URL = envir("CELERY_BACKEND_URL")
     elif app_run_env == "DOCKER":
-        CELERY_BROKER_URL = "pyamqp://admin:mypass@myapp-rabbitmq//"
-        CELERY_BACKEND_URL = "redis://myapp-redis"
+        CELERY_BROKER_URL = "amqp://admin:password@rabbitmq:5672"
+        CELERY_BACKEND_URL = "redis://redis:6379"
     elif app_run_env == "HEROKU":
         CELERY_BROKER_URL = envir["CLOUDAMQP_URL"]
         CELERY_BACKEND_URL = envir["REDIS_URL"]
 
     GOOGLE_CLIENT_ID = envir("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = envir("GOOGLE_CLIENT_SECRET")
+
+    MAIL_SERVER=envir("MAIL_SERVER")
+    MAIL_PORT=envir("MAIL_PORT")
+    MAIL_USE_SSL=(envir("MAIL_USE_SSL") == 'True')
+    MAIL_USE_TLS=(envir("MAIL_USE_TLS") == 'True')
+    MAIL_USERNAME=envir("MAIL_USERNAME")
+    MAIL_PASSWORD=envir("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER=envir("MAIL_DEFAULT_SENDER")
+    ADMINS=envir("ADMINS")
     
 
 
