@@ -99,7 +99,7 @@ You can make use of the following users:
 
     # Run pytest
     python -m pytest --setup-show --cov=app
-
+ 
 
 ## Trouble shooting
 
@@ -118,7 +118,7 @@ With thanks to the following Flask extensions:
 
 <!-- Please consider leaving this line. Thank you -->
 [Flask-User-starter-app](https://github.com/lingthio/Flask-User-starter-app) was used as a starting point for this code repository.
-
+  
 
 ## Authors
 
