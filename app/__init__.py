@@ -25,7 +25,7 @@ from app.extensions import FlaskCelery, IN_CELERY_WORKER_PROCESS
 from app.core.forms import ExtendedLoginForm
 from app.oauth import oauth_registration
 from app.settings import DATA_FMT, LOGGING_FILE, LOGGING_FORMAT, Develop, Prod
-from app.core.models import MyMailUtil
+
 
 logging.basicConfig(#filename=LOGGING_FILE,
                     #filemode='a',
@@ -55,8 +55,7 @@ class MyAdminIndexView(AdminIndexView):
 
 def register_extensions(server):
     from app.extensions import db, login, migrate, bootstrap, mail, csrf_protect, admin, oauth
-    if not IN_CELERY_WORKER_PROCESS:
-        from app.extensions import security
+    from app.extensions import security
     celeryapp.celery = FlaskCelery(app=server)
     with server.app_context():
         bootstrap.init_app(server)
@@ -70,12 +69,12 @@ def register_extensions(server):
         oauth_registration(oauth)
         CSRFProtect(server)
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-        if not IN_CELERY_WORKER_PROCESS:
-            security.init_app(server,
-                              user_datastore, 
-                              confirm_register_form=RegisterForm,
-                              login_form=ExtendedLoginForm,
-                              mail_util_cls=MyMailUtil)
+        from app.core.models import MyMailUtil
+        security.init_app(server,
+                            user_datastore, 
+                            confirm_register_form=RegisterForm,
+                            login_form=ExtendedLoginForm,
+                            mail_util_cls=MyMailUtil)
         admin.init_app(server, index_view = MyAdminIndexView())
         admin.add_view(ControllerModelView(User, db.session))
         admin.add_view(ControllerModelView(Role, db.session))

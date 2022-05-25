@@ -15,21 +15,19 @@ services:
     container_name: webapp-template-flask
     build:
       context: .
-      dockerfile: ./Docker/Dockerfilebis
-      target: debug
+      dockerfile: ./Docker/Dockerfile
     env_file:
       - ./Docker/docker.env
     ports:
       - 5000:5000
-      - 5678:5678
     volumes:
-      - .:/myapp
+      - .:/app
     depends_on:
 #      - postgres
       - redis
       - celery-worker
-    #entrypoint: 
-    #  - /myapp/gunicorn.sh
+    entrypoint:
+      - /myapp/gunicorn.sh
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: webapp-template-rabbitmq
@@ -50,7 +48,7 @@ services:
     command: celery -A app.celeryapp.celery_worker.celery -b amqp://admin:password@rabbitmq:5672 --result-backend redis://redis:6379 worker --concurrency=2  --loglevel=info --logfile=logs/celery.log  -B
     build:
       context: .
-      dockerfile: ./Docker/Dockerfilebis
+      dockerfile: ./Docker/Dockerfile
     env_file:
       - ./Docker/docker.env
     depends_on:
@@ -61,7 +59,7 @@ services:
   dashboard:
     build:
       context: .
-      dockerfile: ./Docker/Dockerfilebis
+      dockerfile: ./Docker/Dockerfile
     container_name: webapp-template-celery-dashboard
     command: celery --broker=amqp://admin:password@rabbitmq:5672 flower --port=5555 
     ports:

@@ -27,17 +27,46 @@
             "jinja": true
         },
         {
+            "name": "Python: Remote Attach",
+            "type": "python",
+            "request": "attach",
+            "port": 5678,
+            "host": "localhost",
+            "pathMappings": [
+              {
+                "localRoot": "${workspaceFolder}",
+                "remoteRoot": "/myapp"
+              }
+            ]
+        },
+        {
+            "name": "Python : Flask in docker",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "python": {
+                "pathMappings": [
+                  {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/app"
+                  }
+                ],
+                "projectType": "django"
+            }
+        },
+        {
             "name": "Python : Celery Workers (Windows)",
             "type": "python",
             "request": "launch",
             "module": "celery",
             "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
             "args": [
                 "-A",
                 "app.celeryapp.celery_worker.celery",
                 "worker",
-                "-P",
-                "gevent",
+                //"-P",
+                //"gevent",
                 "-l",
                 "info",
                 "-E",
