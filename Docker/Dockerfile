@@ -38,4 +38,4 @@ WORKDIR /myapp
 
 RUN chmod +x /myapp/gunicorn.sh
 ENV APP_RUN_ENV=DOCKER
-EXPOSE 5000
+EXPOSE 5001

@@ -7,9 +7,10 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV PYTHONFAULTHANDLER 1
 ENV FLASK_ENV="docker"
+ENV APP_RUN_ENV="DOCKER"
 #ENV FLASK_APP=app/__init__.py
 #ENV APP_RUN_ENV=DOCKER
-EXPOSE 5000
+EXPOSE 5001
 
 FROM base as python-deps
 
@@ -36,10 +37,13 @@ RUN pip install debugpy
 ENV PYTHONDONTWRITEBYTECODE 1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED 1
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+RUN flask db upgrade
+RUN flask init create-users
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5001
 
 FROM runtime as prod
-
 RUN chmod +x /myapp/gunicorn.sh
+RUN flask db upgrade
+RUN flask init create-users
 CMD /myapp/gunicorn.sh
 
