@@ -65,7 +65,7 @@ class Config:
     SECURITY_EMAIL_SENDER = envir("SECURITY_EMAIL_SENDER")
     # These need to be defined to handle redirects
     # As defined in the API documentation - they will receive the relevant context
-    SECURITY_POST_CONFIRM_VIEW = "/confirmed"
+    SECURITY_POST_CONFIRM_VIEW = "security.confirm"
     SECURITY_CONFIRM_ERROR_VIEW = "/confirm-error"
     SECURITY_RESET_VIEW = "/reset-password"
     SECURITY_RESET_ERROR_VIEW = "/reset-password"

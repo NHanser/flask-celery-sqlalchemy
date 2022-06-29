@@ -38,7 +38,7 @@ We assume that you have `git` and `virtualenv` and `virtualenvwrapper` installed
     # Clone the code repository into ~/dev/my_app
     mkdir -p ~/dev
     cd ~/dev
-    git clone https://github.com/lingthio/Flask-User-starter-app.git my_app
+    git clone https://github.com/NHanser/flask-celery-sqlalchemy.git my_app
 
     # Create the 'my_app' virtual environment using virtualenv
     cd ~/dev/my_app
@@ -73,20 +73,45 @@ See https://help.yahoo.com/kb/SLN27791.html
 
 
 ## Initializing the Database
-
-    # Create DB tables and populate the roles and users tables
+##### Create local postgresql database
+    mkdir -p ~/dev/my_app/postgresql-data
+##### Create DB tables and populate the roles and users tables
     flask db init
     flask db migrate -m "Initial version"
     flask db upgrade
-# fill the database with 2 sample users
+
+##### Fill the database with 2 sample users
     flask init create-users
-# create feeds
+##### create feeds (optional)
     flask init create-feeds
 
-## Running the app
+## Debug the app
+### Set environment
+Copy template file
 
-    # Start the Flask development web server
-    flask run
+    cp dev/docker.env.template dev/docker.env
+    
+Then edit dev/docker.env
+
+### Docker compose
+    docker compose -f "dev/docker-compose.yml" up -d --build
+
+### Launch debug configuration in VSCode
+If you don't launch debugger, application will not start
+
+    {
+        "name": "Python: Remote Attach",
+        "type": "python",
+        "request": "attach",
+        "port": 5678,
+        "host": "localhost",
+        "pathMappings": [
+            {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/myapp"
+            }
+        ]
+    },
 
 Point your web browser to http://localhost:5000/
 
@@ -96,13 +121,11 @@ You can make use of the following users:
 
 
 ## Running the automated tests
-
     # Run pytest
     python -m pytest --setup-show --cov=app
  
 
 ## Trouble shooting
-
 If you make changes in the Models and run into DB schema issues, delete the sqlite DB file `app.sqlite`.
 
 
@@ -122,4 +145,4 @@ With thanks to the following Flask extensions:
 
 ## Authors
 
-- Kurt Wiersma (kwiersma at gmail.com)
+- Nicolas Hans (NHanser)

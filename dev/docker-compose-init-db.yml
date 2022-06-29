@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  postgres:
+    container_name: webapp-postgres
+    image: postgres:10
+    env_file:
+      - ./docker.env
+    volumes:
+      - ../postgresql-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  app:
+    container_name: webapp-template-flask
+    build:
+      context: ..
+      dockerfile: ./dev/Dockerfile
+      target: debug
+    env_file:
+      - ./docker.env
+    entrypoint: [ "flask", "db", "init", "&&", "flask", "db", "migrate", "-m",  "\"Initial version\"", "&&", "flask", "db", "upgrade"]
+    ports:
+      - ${FLASK_PORT}:${FLASK_PORT}
+    volumes:
+      - ..:/myapp
+    depends_on:
+      - postgres
