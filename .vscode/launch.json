@@ -40,21 +40,6 @@
             ]
         },
         {
-            "name": "Python : Flask in docker",
-            "type": "docker",
-            "request": "launch",
-            "preLaunchTask": "docker-run: debug",
-            "python": {
-                "pathMappings": [
-                  {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "/app"
-                  }
-                ],
-                "projectType": "django"
-            }
-        },
-        {
             "name": "Python : Celery Workers (Windows)",
             "type": "python",
             "request": "launch",
