@@ -68,6 +68,10 @@ def create_feeds():
 
     db.session.commit()
 
+############################################################################
+### https://www.thedigitalcatonline.com/blog/2020/07/06/flask-project-setup-tdd-docker-postgres-and-more-part-2/
+############################################################################
+
 @commands_bp.cli.command()
 def create_users():
     # Create users

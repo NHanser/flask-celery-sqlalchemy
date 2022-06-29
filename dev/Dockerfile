@@ -6,10 +6,12 @@ FROM python:3.10-slim as base
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV PYTHONFAULTHANDLER 1
+
 ENV FLASK_ENV="docker"
 #ENV FLASK_APP=app/__init__.py
 #ENV APP_RUN_ENV=DOCKER
 EXPOSE 5000
+
 FROM base as python-deps
 
 # Install pipenv and compilation dependencies
@@ -38,7 +40,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN flask db upgrade
 RUN flask init create-users
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5001
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p ${FLASK_PORT}
 
 FROM runtime as prod
 RUN chmod +x /myapp/gunicorn.sh

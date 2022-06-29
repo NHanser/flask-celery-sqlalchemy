@@ -1,35 +1,37 @@
 version: "3.7"
 services:
-#  postgres:
-#    container_name: webapp-postgres
-#    image: postgres:10
-#    environment:
-#      - POSTGRES_USER=testusr
-#      - POSTGRES_PASSWORD=password
-#      - POSTGRES_DB=testdb
-#    volumes:
-#      - myvol:/var/lib/postgresql/data
-#    ports:
-#      - "5433:5432"
+  postgres:
+    container_name: webapp-postgres
+    image: postgres:10
+    env_file:
+      - ./docker.env
+    environment:
+      - POSTGRES_USER=testusr
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=testdb
+    volumes:
+      - ../postgresql-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
   app:
     container_name: webapp-template-flask
     build:
-      context: .
-      dockerfile: ./Docker/Dockerfilebis
+      context: ..
+      dockerfile: ./dev/Dockerfile
       target: debug
     env_file:
-      - ./Docker/docker.env
+      - ./docker.env
     ports:
-      - 5000:5000
+      - ${FLASK_PORT}:${FLASK_PORT}
       - 5678:5678
     volumes:
-      - .:/myapp
+      - ..:/myapp
     depends_on:
-#      - postgres
+      - postgres
       - redis
       - celery-worker
-    #entrypoint: 
-    #  - /myapp/gunicorn.sh
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: webapp-template-rabbitmq
@@ -40,40 +42,40 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=password
+
   redis:
     image: redis:6-alpine
     container_name: webapp-template-redis
     ports:
       - 6390:6379
+
   celery-worker:
     container_name: webapp-template-celery-worker
     command: celery -A app.celeryapp.celery_worker.celery -b amqp://admin:password@rabbitmq:5672 --result-backend redis://redis:6379 worker --concurrency=2  --loglevel=info --logfile=logs/celery.log  -B
     build:
-      context: .
-      dockerfile: ./Docker/Dockerfilebis
+      context: ..
+      dockerfile: ./dev/Dockerfile
     env_file:
-      - ./Docker/docker.env
+      - ./docker.env
     depends_on:
       - redis
       - rabbitmq
     volumes:
-      - ./logs:/myapp/logs
+      - ../logs:/myapp/logs
+
   dashboard:
     build:
-      context: .
-      dockerfile: ./Docker/Dockerfilebis
+      context: ..
+      dockerfile: ./dev/Dockerfile
     container_name: webapp-template-celery-dashboard
     command: celery --broker=amqp://admin:password@rabbitmq:5672 flower --port=5555 
     ports:
       - 5556:5555
     env_file:
-      - ./Docker/docker.env
+      - ./docker.env
     depends_on:
       - app
       - redis
       - celery-worker
       - rabbitmq
 
-volumes:
-  myvol:
-    name: myvol
