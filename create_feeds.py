@@ -8,7 +8,7 @@ def submit_feed(i: int):
 
     args = {'title': f'Feed {i}', 'url': 'https://www.robinwieruch.de/index.xml'}
 
-    url = f'http://localhost:5000/new-task?title={args["title"]}&url={args["url"]}'
+    url = f'http://localhost:5001/new-task?title={args["title"]}&url={args["url"]}'
     req = requests.get(url)
 
     print(f'R {i} Status code: {req.status_code}')
